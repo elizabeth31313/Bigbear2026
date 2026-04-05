@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🌸 Big Bear Spring Break 2025 — Family Vote!</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: #FAFAFA; }
+    ::-webkit-scrollbar { display: none; }
+    input, button { font-family: inherit; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useCallback } = React;
+
+    const CATEGORIES = [
+      {
+        id: "activities", label: "Fun Activities", icon: "🎉",
+        color: "#FF6FA8", light: "#FFF0F6", border: "#FFCCE3",
+        items: [
+          { id: "alpine-slide", name: "Alpine Slide at Magic Mountain", desc: "Bobsled tracks, Mineshaft Coaster, go-karts, mini golf & zipline — all in one spot!", tag: "🛷 All Ages" },
+          { id: "horseback", name: "Baldwin Lake Stables", desc: "Horseback riding through mountain trails + petting zoo with goats, sheep & rabbits!", tag: "🐴 So Fun!" },
+          { id: "kayaking", name: "Kayaking on Big Bear Lake", desc: "Rent kayaks or paddleboards — lake opens April 1st and spring is gorgeous!", tag: "🚣 Lake Life" },
+          { id: "speedway", name: "Big Bear Speedway", desc: "Formula-1 style Sodi karts on a 1/5 mile track with hairpin turns & checkered flags!", tag: "🏎️ Zoom Zoom" },
+          { id: "bowling", name: "Bowling Night", desc: "Classic family bowling — great for a chill evening after a big adventure day!", tag: "🎳 Let's Bowl" },
+          { id: "gold-rush", name: "Gold Rush Mining Co.", desc: "Pan for real gold & gems — the girls will LOVE finding their own treasure!", tag: "⛏️ Girl Treasure" },
+          { id: "zoo", name: "Big Bear Alpine Zoo", desc: "Unique alpine zoo — meet bears, mountain lions, snow leopards & flying squirrels!", tag: "🦁 Wildlife" },
+          { id: "snow-summit", name: "Snow Summit Basecamp", desc: "30-ft climbing wall, euro bungee, zip line & the Sky Chair with 360° views at 8,200 ft!", tag: "🧗 Thrills" },
+          { id: "pirate-ship", name: "Big Bear Pirate Ship Tour", desc: "90-min narrated cruise on a 16th-century Spanish galleon replica — so magical!", tag: "🏴‍☠️ Ahoy!" },
+        ],
+      },
+      {
+        id: "restaurants", label: "Yummy Eats", icon: "🍽️",
+        color: "#FF8C42", light: "#FFF5EE", border: "#FFDFC4",
+        items: [
+          { id: "teddy-bear", name: "Teddy Bear Restaurant", desc: "Big Bear icon since 1944 — famous homemade pies, hearty breakfasts & cozy vibes!", tag: "🐻 Classic" },
+          { id: "grizzly-manor", name: "Grizzly Manor Cafe", desc: "Giant Man-vs-Food portions! Classic American diner with omelets, pancakes & burgers.", tag: "🍳 Breakfast" },
+          { id: "cafe-crepe", name: "Café Crêpe", desc: "Adorable French crêperie with sweet & savory crêpes, cozy fireplace & hot cocoa!", tag: "🥞 So Cute!" },
+          { id: "barnstorm", name: "Barnstorm Restaurant", desc: "Aviation-themed diner with runway views — watch small planes while you eat!", tag: "✈️ Unique!" },
+          { id: "tropicali", name: "Tropicali", desc: "Tropical Mexican flavors the whole family will love — amazing horchata & esquite!", tag: "🌮 Tropical" },
+          { id: "peppercorn", name: "Peppercorn Grill", desc: "Rustic upscale dinner spot in the Village — amazing crab cakes & pistachio chicken!", tag: "🍷 Fancy Night" },
+          { id: "big-bear-brewing", name: "Big Bear Lake Brewing Co.", desc: "Great craft drinks for adults & amazing food for everyone in a cozy setting.", tag: "🍺 Cheers!" },
+          { id: "murrays", name: "Murray's Saloon & Eatery", desc: "Classic mountain saloon with great food, a fireplace & warm rustic atmosphere.", tag: "🤠 Cozy" },
+        ],
+      },
+      {
+        id: "sweets", label: "Sweets & Boba", icon: "🧁",
+        color: "#A855F7", light: "#FAF5FF", border: "#E9D5FF",
+        items: [
+          { id: "north-pole", name: "North Pole Fudge & Ice Cream Co.", desc: "Homemade fudge, chocolate-dipped ice cream sandwiches, caramel apples & sorbets!", tag: "🍦 Must Go!" },
+          { id: "sister-bake", name: "Sister My Sister Bake Shop", desc: "Fresh daily baked cupcakes, brownies, cookie sandwiches & cinnamon rolls — yum!", tag: "🍰 Bakery Love" },
+          { id: "anju", name: "An Ran Ju Gelato & Teahouse", desc: "24 gelato flavors + BOBA tea, smoothies & fresh lemonade — boba in Big Bear! 🧋", tag: "🧋 Boba!" },
+          { id: "oj-donuts", name: "OJ's Donuts House", desc: "Fresh made-daily donuts that go fast — get there early or miss out!", tag: "🍩 Fresh Daily" },
+          { id: "bubbly-berry", name: "Bubbly Berry Bakeshop", desc: "The BEST cinnamon buns, cookies & custom cake orders in all of Big Bear!", tag: "🫐 Fan Fave" },
+          { id: "beary-bliss", name: "Beary Bliss Frozen Yogurt", desc: "Big Bear's only froyo shop with loads of flavors and amazing topping choices!", tag: "🍧 Froyo Bar" },
+          { id: "village-sweet", name: "Village Ice Cream & Sweet Shoppe", desc: "Charming mom & pop shop with homemade ice cream + a pop of boba in the cup!", tag: "🍨 Charming" },
+          { id: "uji-time", name: "Uji Time Dessert", desc: "Japanese-inspired sweets with unique flavors — a one-of-a-kind dessert spot!", tag: "🍡 Kawaii!" },
+        ],
+      },
+      {
+        id: "shops", label: "Fun Shops", icon: "🛍️",
+        color: "#14B8A6", light: "#F0FDFA", border: "#99F6E4",
+        items: [
+          { id: "village-shops", name: "Big Bear Village", desc: "Stroll the entire village — free parking, open-air shops, boutiques & souvenirs!", tag: "🏘️ Village Walk" },
+          { id: "queen-bees", name: "Queen Bee's Honey Shop", desc: "Honey straws, flavored honey, lollipops, ginger ale & bee-themed chocolates!", tag: "🐝 So Sweet" },
+          { id: "rustic-choc", name: "Rustic Mountain Chocolates", desc: "Artisan mountain chocolates + the Silver Fawn Jewelry boutique — double win!", tag: "🍫 Treats + Gems" },
+          { id: "gold-rush-shop", name: "Gold Rush Mining Co. Gift Shop", desc: "Crystals, gems, fossils & mountain souvenirs the girls will treasure forever!", tag: "💎 Keepsakes" },
+          { id: "candy-shop", name: "Village Sweet Shoppe & Toy Store", desc: "Barrels of taffy, candy, Mexican sweets & vintage treats — kid heaven!", tag: "🍭 Candy Land" },
+        ],
+      },
+      {
+        id: "photo", label: "Photo Ops", icon: "📸",
+        color: "#EC4899", light: "#FDF2F8", border: "#FBCFE8",
+        items: [
+          { id: "lake-shore", name: "Big Bear Lake Shore", desc: "Golden-hour mountain reflections on the water — magical for group & family shots!", tag: "🏔️ Golden Hour" },
+          { id: "village-photo", name: "The Village Streets", desc: "Alpine storefronts, colorful flower boxes & charming backdrops everywhere!", tag: "🌺 Insta-worthy" },
+          { id: "sky-chair", name: "Snow Summit Sky Chair", desc: "Ride up to 8,200 ft and get jaw-dropping panoramic views — epic group photo!", tag: "🚡 Peak Views" },
+          { id: "castle-rock", name: "Castle Rock Trail Boulders", desc: "Giant granite boulders with sweeping lake views below — so dramatic & fun!", tag: "🪨 Dramatic" },
+          { id: "pirate-ship-photo", name: "Big Bear Pirate Ship", desc: "The iconic 16th-century galleon on the lake — the girls will go crazy for this!", tag: "🏴‍☠️ Iconic" },
+          { id: "wildflowers", name: "Spring Wildflower Fields", desc: "April = spring wildflowers blooming across the San Bernardino forest trails!", tag: "🌸 Spring Bloom" },
+        ],
+      },
+      {
+        id: "trails", label: "Nearby Trails", icon: "🥾",
+        color: "#22C55E", light: "#F0FDF4", border: "#BBF7D0",
+        items: [
+          { id: "pedal-path", name: "Alpine Pedal Path", desc: "Easy, paved, lakeside path — totally flat & great for all ages including the littles!", tag: "🚲 Easy" },
+          { id: "jenks-lake", name: "Jenks Lake Trail", desc: "Beautiful family-friendly hike ending at a peaceful, serene alpine lake — so pretty!", tag: "🏞️ Moderate" },
+          { id: "castle-rock-trail", name: "Castle Rock Trail", desc: "Moderate 2-mile hike with massive granite boulders and stunning lake views below.", tag: "🪨 Moderate" },
+          { id: "woodland-trail", name: "Woodland Trail", desc: "Peaceful forest walk through old-growth ponderosa pines — great for spotting wildlife!", tag: "🌲 Easy" },
+          { id: "cougar-crest", name: "Cougar Crest Trail", desc: "Gorgeous trail connecting to Pacific Crest Trail with epic mountain ridge views!", tag: "⛰️ Challenge" },
+        ],
+      },
+      {
+        id: "stayin", label: "Night In Ideas", icon: "🏠",
+        color: "#6366F1", light: "#EEF2FF", border: "#C7D2FE",
+        items: [
+          { id: "jacuzzi-charcut", name: "Hot Tub + Charcuterie Night", desc: "Wine & fancy cheese boards for the adults, sparkling cider & fruit plates for the girls under the stars!", tag: "🧀 Adults + Kids" },
+          { id: "jacuzzi-smores", name: "Hot Tub + S'mores Fire Pit", desc: "Fire pit s'mores, hot cocoa bar with all the fixings & cozy blankets outside!", tag: "🔥 So Cozy" },
+          { id: "game-night", name: "Epic Game Night", desc: "Popcorn bar, candy buffet, team competitions — bring your fave board games!", tag: "🎲 Family Fun" },
+          { id: "movie-night", name: "Movie Marathon Night", desc: "Blanket forts, massive popcorn spread, candy & a great movie — kids pick first!", tag: "🍿 Cozy Night" },
+          { id: "spa-girls", name: "Girls Spa Night", desc: "Face masks, nail painting, hair braiding & cucumber water for all the ladies big & small!", tag: "💅 Pamper Time" },
+          { id: "taco-night", name: "DIY Taco Bar Night", desc: "Build your own tacos with all the toppings at home — easy, fun & everyone wins!", tag: "🌮 Dinner In" },
+          { id: "smoked-bbq", name: "Smoked BBQ + Jacuzzi Hang", desc: "Smoke some meats, grab the wine & cigars for the adults, relax by the hot tub!", tag: "💨 Chill Vibes" },
+        ],
+      },
+    ];
+
+    const PETAL_POSITIONS = [
+      { top: "8%", left: "5%", size: 18, rot: 25 },
+      { top: "15%", left: "88%", size: 14, rot: -15 },
+      { top: "35%", left: "92%", size: 20, rot: 40 },
+      { top: "60%", left: "3%", size: 16, rot: -30 },
+      { top: "80%", left: "90%", size: 12, rot: 10 },
+      { top: "5%", left: "50%", size: 10, rot: 60 },
+    ];
+
+    function Petal({ top, left, size, rot }) {
+      return (
+        <div style={{ position: "fixed", top, left, width: size, height: size, opacity: 0.22, pointerEvents: "none", zIndex: 0, transform: `rotate(${rot}deg)` }}>
+          <svg viewBox="0 0 24 24" fill="#FF6FA8">
+            <path d="M12 2C12 2 7 7 7 12C7 16 9.5 19 12 20C14.5 19 17 16 17 12C17 7 12 2 12 2Z"/>
+            <path d="M12 2C12 2 17 7 17 12C17 16 14.5 19 12 20C9.5 19 7 16 7 12C7 7 12 2 12 2Z" fill="#FFADD0"/>
+          </svg>
+        </div>
+      );
+    }
+
+    function StarBurst({ x, y, color }) {
+      return (
+        <div style={{ position: "fixed", left: x, top: y, width: 20, height: 20, opacity: 0.28, pointerEvents: "none", zIndex: 0 }}>
+          <svg viewBox="0 0 20 20" fill={color}>
+            <polygon points="10,1 12.5,7.5 19,8 14,13 15.5,19.5 10,16 4.5,19.5 6,13 1,8 7.5,7.5"/>
+          </svg>
+        </div>
+      );
+    }
+
+    function VoteBar({ count, max, color }) {
+      const pct = max > 0 ? Math.round((count / max) * 100) : 0;
+      return (
+        <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 6 }}>
+          <div style={{ flex: 1, height: 6, background: "#F0F0F0", borderRadius: 3, overflow: "hidden" }}>
+            <div style={{ height: "100%", width: `${pct}%`, background: color, borderRadius: 3, transition: "width 0.5s ease" }} />
+          </div>
+          <span style={{ fontSize: 11, fontWeight: 700, color, minWidth: 22, textAlign: "right" }}>
+            {count > 0 ? `${count} ♥` : "0"}
+          </span>
+        </div>
+      );
+    }
+
+    function ItemCard({ item, cat, voted, voteCount, maxVotes, onVote }) {
+      return (
+        <div onClick={() => onVote(item.id)} style={{
+          background: voted ? cat.light : "#fff",
+          border: `2px solid ${voted ? cat.color : "#F0F0F0"}`,
+          borderRadius: 20, padding: "14px 16px", cursor: "pointer",
+          transition: "all 0.2s", userSelect: "none",
+        }}>
+          <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+            <div style={{ flex: 1 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", marginBottom: 3 }}>
+                <span style={{ fontWeight: 700, fontSize: 14, color: "#222", lineHeight: 1.3 }}>{item.name}</span>
+                <span style={{ fontSize: 10, fontWeight: 700, background: cat.light, color: cat.color, border: `1px solid ${cat.border}`, borderRadius: 20, padding: "2px 8px", whiteSpace: "nowrap" }}>{item.tag}</span>
+              </div>
+              <p style={{ margin: 0, fontSize: 12, color: "#777", lineHeight: 1.5 }}>{item.desc}</p>
+              <VoteBar count={voteCount} max={maxVotes} color={cat.color} />
+            </div>
+            <div style={{
+              flexShrink: 0, width: 40, height: 40, borderRadius: 12, display: "flex",
+              alignItems: "center", justifyContent: "center", fontSize: 20,
+              background: voted ? cat.color : "#F5F5F5",
+              boxShadow: voted ? `0 4px 12px ${cat.color}50` : "none",
+              transition: "all 0.2s", transform: voted ? "scale(1.12)" : "scale(1)",
+            }}>
+              {voted ? "💖" : "🤍"}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // ── localStorage helpers ──────────────────────────────
+    const LS_VOTES_KEY = "bb25-votes";
+    const lsGet = (key) => { try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : null; } catch { return null; } };
+    const lsSet = (key, val) => { try { localStorage.setItem(key, JSON.stringify(val)); } catch {} };
+
+    export default function App() {
+      const [phase, setPhase] = useState("cover");
+      const [nameInput, setNameInput] = useState("");
+      const [userName, setUserName] = useState("");
+      const [activeTab, setActiveTab] = useState(0);
+      const [votes, setVotes] = useState({});
+      const [myVotes, setMyVotes] = useState({});
+      const [userId] = useState(() => {
+        let id = localStorage.getItem("bb25-uid");
+        if (!id) { id = "u" + Math.random().toString(36).slice(2, 9); localStorage.setItem("bb25-uid", id); }
+        return id;
+      });
+      const [toast, setToast] = useState(null);
+      const [showResults, setShowResults] = useState(false);
+
+      // Load from localStorage on mount
+      useEffect(() => {
+        const saved = lsGet(LS_VOTES_KEY) || {};
+        setVotes(saved);
+        const mine = lsGet(`bb25-my-${userId}`) || {};
+        setMyVotes(mine);
+        const savedName = localStorage.getItem("bb25-name");
+        if (savedName) { setUserName(savedName); setNameInput(savedName); }
+      }, [userId]);
+
+      const showToast = (msg) => { setToast(msg); setTimeout(() => setToast(null), 2200); };
+
+      const handleVote = (itemId) => {
+        const alreadyVoted = myVotes[itemId];
+        const newMyVotes = { ...myVotes };
+        const newVotes = { ...votes };
+        if (alreadyVoted) {
+          delete newMyVotes[itemId];
+          newVotes[itemId] = Math.max(0, (newVotes[itemId] || 0) - 1);
+          showToast("Vote removed 🩶");
+        } else {
+          newMyVotes[itemId] = true;
+          newVotes[itemId] = (newVotes[itemId] || 0) + 1;
+          showToast("Voted! 💖");
+        }
+        setMyVotes(newMyVotes);
+        setVotes(newVotes);
+        lsSet(LS_VOTES_KEY, newVotes);
+        lsSet(`bb25-my-${userId}`, newMyVotes);
+      };
+
+      const myTotalVotes = Object.keys(myVotes).length;
+
+      const getTopPicks = () =>
+        CATEGORIES.map(cat => {
+          const sorted = [...cat.items]
+            .map(item => ({ ...item, count: votes[item.id] || 0 }))
+            .filter(i => i.count > 0)
+            .sort((a, b) => b.count - a.count)
+            .slice(0, 3);
+          return { ...cat, top: sorted };
+        }).filter(c => c.top.length > 0);
+
+      // ── THANK YOU SCREEN ────────────────────────────────
+      if (phase === "thankyou") {
+        const topPicks = getTopPicks();
+        return (
+          <div style={{ minHeight: "100vh", background: "linear-gradient(160deg, #FFF0F8 0%, #F5F0FF 50%, #EFF8FF 100%)", fontFamily: "'Segoe UI', system-ui, sans-serif", padding: "40px 20px 60px", display: "flex", flexDirection: "column", alignItems: "center" }}>
+            {PETAL_POSITIONS.map((p, i) => <Petal key={i} {...p} />)}
+            <StarBurst x="8%" y="15%" color="#FF6FA8" />
+            <StarBurst x="88%" y="30%" color="#A855F7" />
+            <StarBurst x="75%" y="85%" color="#14B8A6" />
+
+            <div style={{ maxWidth: 580, width: "100%", position: "relative", zIndex: 1 }}>
+              {/* Thank you card */}
+              <div style={{ background: "rgba(255,255,255,0.95)", borderRadius: 28, padding: "32px 28px 28px", boxShadow: "0 8px 48px rgba(255,111,168,0.18)", border: "1.5px solid #FFD6EA", textAlign: "center", marginBottom: 24 }}>
+                <div style={{ fontSize: 52, marginBottom: 8 }}>🎉</div>
+                <div style={{ display: "inline-block", background: "linear-gradient(135deg, #FF6FA8, #A855F7)", color: "white", fontSize: 10, fontWeight: 700, letterSpacing: 2, padding: "4px 14px", borderRadius: 20, marginBottom: 14, textTransform: "uppercase" }}>Votes Saved!</div>
+                <h2 style={{ margin: "0 0 8px", fontSize: 26, fontWeight: 900, background: "linear-gradient(135deg, #FF6FA8, #A855F7)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+                  Thank you, {userName}! 💖
+                </h2>
+                <p style={{ margin: "0 0 6px", fontSize: 14, color: "#888", lineHeight: 1.6 }}>
+                  Your picks are locked in — here are your personal favorites! 🌸
+                </p>
+                <div style={{ background: "linear-gradient(135deg, #FFF0F8, #F5F0FF)", borderRadius: 14, padding: "12px 18px", margin: "14px 0 0", border: "1px solid #FFD6EA", display: "inline-block" }}>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: "#A855F7" }}>
+                    You voted for {myTotalVotes} item{myTotalVotes !== 1 ? "s" : ""} 💕
+                  </span>
+                </div>
+              </div>
+
+              {/* Top Picks */}
+              <div style={{ background: "rgba(255,255,255,0.95)", borderRadius: 24, padding: "24px 22px", boxShadow: "0 4px 32px rgba(168,85,247,0.12)", border: "1.5px solid #E9D5FF", marginBottom: 24 }}>
+                <div style={{ textAlign: "center", marginBottom: 18 }}>
+                  <div style={{ fontSize: 26, marginBottom: 4 }}>🏆</div>
+                  <h3 style={{ margin: 0, fontSize: 18, fontWeight: 900, background: "linear-gradient(135deg, #FF6FA8, #A855F7)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Your Top Picks</h3>
+                  <p style={{ margin: "4px 0 0", fontSize: 11, color: "#BBB" }}>Everything you voted for, ranked by category</p>
+                </div>
+                {topPicks.length === 0 ? (
+                  <div style={{ textAlign: "center", padding: "20px 0", color: "#CCC", fontSize: 14 }}>
+                    Go back and vote for some favorites first! 🌸
+                  </div>
+                ) : (
+                  <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+                    {topPicks.map(cat => (
+                      <div key={cat.id} style={{ background: cat.light, borderRadius: 16, padding: "14px 16px", border: `1.5px solid ${cat.border}` }}>
+                        <div style={{ fontSize: 12, fontWeight: 800, color: cat.color, marginBottom: 10 }}>{cat.icon} {cat.label}</div>
+                        {cat.top.map((item, i) => (
+                          <div key={item.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: i < cat.top.length - 1 ? 8 : 0 }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 0 }}>
+                              <span style={{ fontSize: 16, flexShrink: 0 }}>{i === 0 ? "🥇" : i === 1 ? "🥈" : "🥉"}</span>
+                              <div style={{ fontSize: 12, fontWeight: 700, color: "#333", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.name}</div>
+                            </div>
+                            <div style={{ flexShrink: 0, marginLeft: 8, background: cat.color, color: "white", borderRadius: 20, padding: "2px 10px", fontSize: 11, fontWeight: 800 }}>
+                              💖 Voted!
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Action buttons */}
+              <div style={{ display: "flex", gap: 10 }}>
+                <button onClick={() => setPhase("brochure")} style={{ flex: 1, padding: "13px 0", borderRadius: 14, border: "1.5px solid #FFD6EA", background: "white", color: "#FF6FA8", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
+                  ← Back to Voting
+                </button>
+                <button onClick={() => { setPhase("cover"); setNameInput(""); setUserName(""); localStorage.removeItem("bb25-name"); }} style={{ flex: 1, padding: "13px 0", borderRadius: 14, border: "none", background: "linear-gradient(135deg, #FF6FA8, #A855F7)", color: "white", fontSize: 13, fontWeight: 700, cursor: "pointer", boxShadow: "0 4px 14px rgba(168,85,247,0.3)" }}>
+                  New Voter 🌸
+                </button>
+              </div>
+              <p style={{ textAlign: "center", marginTop: 18, fontSize: 11, color: "#CCC" }}>🌸 See you April 7–11 in Big Bear! 🏔️</p>
+            </div>
+          </div>
+        );
+      }
+
+      // ── COVER SCREEN ────────────────────────────────────
+      if (phase === "cover") {
+        return (
+          <div style={{ minHeight: "100vh", background: "linear-gradient(160deg, #FFF0F8 0%, #F5F0FF 40%, #EFF8FF 100%)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Segoe UI', system-ui, sans-serif", padding: 20, position: "relative", overflow: "hidden" }}>
+            {PETAL_POSITIONS.map((p, i) => <Petal key={i} {...p} />)}
+            <StarBurst x="10%" y="70%" color="#A855F7" />
+            <StarBurst x="85%" y="25%" color="#FF6FA8" />
+            <StarBurst x="70%" y="80%" color="#14B8A6" />
+
+            <div style={{ maxWidth: 420, width: "100%", textAlign: "center", position: "relative", zIndex: 1 }}>
+              <div style={{ fontSize: 60, marginBottom: 4, lineHeight: 1 }}>🏔️</div>
+              <div style={{ fontSize: 28, marginBottom: 6 }}>🌸🌷🌸</div>
+
+              <div style={{ background: "rgba(255,255,255,0.92)", borderRadius: 28, padding: "32px 28px", boxShadow: "0 8px 48px rgba(255,111,168,0.15)", border: "1.5px solid #FFD6EA" }}>
+                <div style={{ display: "inline-block", background: "linear-gradient(135deg, #FF6FA8, #A855F7)", color: "white", fontSize: 10, fontWeight: 700, letterSpacing: 2, padding: "4px 14px", borderRadius: 20, marginBottom: 12, textTransform: "uppercase" }}>Spring Break 2025</div>
+                <h1 style={{ margin: "0 0 4px", fontSize: 26, fontWeight: 900, background: "linear-gradient(135deg, #FF6FA8, #A855F7)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Four Seasons Vista</h1>
+                <p style={{ margin: "0 0 2px", fontSize: 13, color: "#999", fontWeight: 600 }}>📍 113 Winding Lane, Big Bear, CA</p>
+                <p style={{ margin: "0 0 20px", fontSize: 13, color: "#A855F7", fontWeight: 700 }}>🗓️ April 7–11, 2025</p>
+
+                <div style={{ background: "linear-gradient(135deg, #FFF0F8, #F5F0FF)", borderRadius: 16, padding: 16, marginBottom: 22, border: "1px solid #FFD6EA" }}>
+                  <p style={{ margin: "0 0 4px", fontSize: 14, fontWeight: 700, color: "#FF6FA8" }}>🗳️ Family Trip Vote!</p>
+                  <p style={{ margin: 0, fontSize: 12, color: "#888", lineHeight: 1.5 }}>Two families, 4 adults & 4 girls — let's plan the best trip ever! Vote for your top picks in every category 💕</p>
+                </div>
+
+                <div style={{ marginBottom: 18 }}>
+                  <p style={{ margin: "0 0 8px", fontSize: 13, fontWeight: 700, color: "#666" }}>Who's voting? 👋</p>
+                  <input
+                    value={nameInput}
+                    onChange={e => setNameInput(e.target.value)}
+                    onKeyDown={e => {
+                      if (e.key === "Enter" && nameInput.trim()) {
+                        const n = nameInput.trim();
+                        setUserName(n);
+                        localStorage.setItem("bb25-name", n);
+                        setPhase("brochure");
+                      }
+                    }}
+                    placeholder="Type your name..."
+                    style={{ width: "100%", padding: "12px 16px", borderRadius: 12, border: "1.5px solid #FFD6EA", fontSize: 15, outline: "none", textAlign: "center", background: "#FFF9FC", color: "#333", boxSizing: "border-box" }}
+                  />
+                </div>
+
+                <button
+                  onClick={() => {
+                    if (nameInput.trim()) {
+                      const n = nameInput.trim();
+                      setUserName(n);
+                      localStorage.setItem("bb25-name", n);
+                      setPhase("brochure");
+                    }
+                  }}
+                  disabled={!nameInput.trim()}
+                  style={{ width: "100%", padding: "13px 0", borderRadius: 14, border: "none", background: nameInput.trim() ? "linear-gradient(135deg, #FF6FA8, #A855F7)" : "#E5E5E5", color: "white", fontSize: 15, fontWeight: 700, cursor: nameInput.trim() ? "pointer" : "not-allowed" }}
+                >
+                  Open My Brochure ✨
+                </button>
+
+                <div style={{ marginTop: 16, display: "flex", gap: 8, justifyContent: "center", flexWrap: "wrap" }}>
+                  {["🌸 2 Families", "👨‍👩‍👧 4 Adults", "👧 4 Girls (8, 8, 11, 11 & 13)"].map(t => (
+                    <span key={t} style={{ background: "#FFF0F8", color: "#FF6FA8", borderRadius: 20, padding: "3px 10px", fontSize: 11, fontWeight: 600 }}>{t}</span>
+                  ))}
+                </div>
+              </div>
+              <p style={{ marginTop: 12, fontSize: 11, color: "#BCA8D0" }}>🌷 Votes save on your device — screenshot to share your picks!</p>
+            </div>
+          </div>
+        );
+      }
+
+      // ── BROCHURE SCREEN ─────────────────────────────────
+      const cat = CATEGORIES[activeTab];
+      const maxVotesCat = Math.max(...cat.items.map(i => votes[i.id] || 0), 1);
+      const getTopPicksInline = () =>
+        CATEGORIES.map(c => {
+          const sorted = [...c.items].map(item => ({ ...item, count: votes[item.id] || 0 })).filter(i => i.count > 0).sort((a, b) => b.count - a.count).slice(0, 3);
+          return { ...c, top: sorted };
+        }).filter(c => c.top.length > 0);
+
+      return (
+        <div style={{ minHeight: "100vh", background: "#FAFAFA", fontFamily: "'Segoe UI', system-ui, sans-serif", position: "relative" }}>
+          {/* Toast */}
+          {toast && (
+            <div style={{ position: "fixed", top: 16, left: "50%", transform: "translateX(-50%)", background: "linear-gradient(135deg, #FF6FA8, #A855F7)", color: "white", padding: "9px 22px", borderRadius: 20, zIndex: 9999, fontWeight: 700, fontSize: 14, pointerEvents: "none", whiteSpace: "nowrap" }}>{toast}</div>
+          )}
+
+          {/* HEADER */}
+          <div style={{ background: "linear-gradient(135deg, #FF6FA8 0%, #A855F7 60%, #6366F1 100%)", color: "white", padding: "24px 20px 16px", position: "relative", overflow: "hidden" }}>
+            <div style={{ position: "absolute", top: 8, right: 16, fontSize: 22, opacity: 0.3 }}>🌸</div>
+            <div style={{ position: "absolute", bottom: 8, left: 12, fontSize: 16, opacity: 0.25 }}>✨</div>
+            <div style={{ position: "absolute", top: 16, left: "45%", fontSize: 13, opacity: 0.2 }}>🌷</div>
+
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", maxWidth: 640, margin: "0 auto" }}>
+              <div>
+                <div style={{ fontSize: 11, opacity: 0.85, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", marginBottom: 2 }}>Spring Break 2025 🌸</div>
+                <div style={{ fontSize: 20, fontWeight: 900, marginBottom: 2 }}>Four Seasons Vista 🏔️</div>
+                <div style={{ fontSize: 11, opacity: 0.8 }}>📍 Big Bear, CA · April 7–11</div>
+              </div>
+              <div style={{ textAlign: "right" }}>
+                <div style={{ fontSize: 11, opacity: 0.8, marginBottom: 2 }}>Hey, {userName}! 👋</div>
+                <div style={{ fontSize: 11, background: "rgba(255,255,255,0.2)", borderRadius: 12, padding: "3px 10px" }}>{myTotalVotes} votes 💖</div>
+              </div>
+            </div>
+
+            <div style={{ display: "flex", gap: 8, marginTop: 14, maxWidth: 640, margin: "14px auto 0" }}>
+              <div style={{ flex: 1, background: "rgba(255,255,255,0.18)", borderRadius: 10, padding: "8px 12px", textAlign: "center" }}>
+                <div style={{ fontSize: 16, fontWeight: 900 }}>{myTotalVotes}</div>
+                <div style={{ fontSize: 10, opacity: 0.85 }}>My Votes</div>
+              </div>
+              <div style={{ flex: 1, background: "rgba(255,255,255,0.18)", borderRadius: 10, padding: "8px 12px", textAlign: "center" }}>
+                <div style={{ fontSize: 16, fontWeight: 900 }}>{CATEGORIES.length}</div>
+                <div style={{ fontSize: 10, opacity: 0.85 }}>Categories</div>
+              </div>
+              <button
+                onClick={() => setShowResults(!showResults)}
+                style={{ flex: 1.5, background: showResults ? "rgba(255,255,255,0.35)" : "rgba(255,255,255,0.18)", border: "none", borderRadius: 10, padding: "8px 10px", color: "white", fontWeight: 700, fontSize: 11, cursor: "pointer" }}
+              >
+                {showResults ? "Hide" : "Show"} My Picks 🏆
+              </button>
+            </div>
+          </div>
+
+          {/* TOP PICKS PANEL */}
+          {showResults && (
+            <div style={{ background: "white", borderBottom: "1.5px solid #F0F0F0", padding: "16px 20px", maxWidth: 640, margin: "0 auto" }}>
+              <p style={{ margin: "0 0 12px", fontWeight: 700, fontSize: 14, color: "#333" }}>🏆 My Favorites So Far</p>
+              {getTopPicksInline().length === 0 ? (
+                <p style={{ margin: 0, color: "#999", fontSize: 13 }}>No votes yet — be the first to vote! 🗳️</p>
+              ) : (
+                <div style={{ display: "grid", gap: 10, gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))" }}>
+                  {getTopPicksInline().map(c => (
+                    <div key={c.id} style={{ background: c.light, borderRadius: 12, padding: 12, border: `1px solid ${c.border}` }}>
+                      <div style={{ fontSize: 11, fontWeight: 700, color: c.color, marginBottom: 6 }}>{c.icon} {c.label}</div>
+                      {c.top.map((item, i) => (
+                        <div key={item.id} style={{ display: "flex", justifyContent: "space-between", fontSize: 11, marginBottom: 3 }}>
+                          <span style={{ color: "#555", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: "80%" }}>{i === 0 ? "🥇" : i === 1 ? "🥈" : "🥉"} {item.name}</span>
+                          <span style={{ fontWeight: 700, color: c.color, flexShrink: 0 }}>💖</span>
+                        </div>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* TAB BAR */}
+          <div style={{ overflowX: "auto", display: "flex", gap: 6, padding: "12px 16px", background: "white", borderBottom: "1px solid #F0F0F0", WebkitOverflowScrolling: "touch", scrollbarWidth: "none", position: "sticky", top: 0, zIndex: 10 }}>
+            {CATEGORIES.map((c, i) => (
+              <button key={c.id} onClick={() => setActiveTab(i)} style={{ flexShrink: 0, padding: "7px 14px", borderRadius: 20, border: "none", cursor: "pointer", fontSize: 11, fontWeight: 700, background: activeTab === i ? c.color : "#F5F5F5", color: activeTab === i ? "white" : "#888", whiteSpace: "nowrap", boxShadow: activeTab === i ? `0 3px 10px ${c.color}40` : "none", transition: "all 0.2s" }}>
+                {c.icon} {c.label}
+              </button>
+            ))}
+          </div>
+
+          {/* ITEMS */}
+          <div style={{ padding: "16px", maxWidth: 640, margin: "0 auto" }}>
+            <div style={{ textAlign: "center", marginBottom: 16 }}>
+              <div style={{ fontSize: 28, marginBottom: 4 }}>{cat.icon}</div>
+              <h2 style={{ margin: "0 0 2px", fontSize: 20, fontWeight: 900, color: cat.color }}>{cat.label}</h2>
+              <p style={{ margin: 0, fontSize: 12, color: "#999" }}>Tap any card to vote — tap again to remove 💖</p>
+            </div>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              {[...cat.items]
+                .sort((a, b) => (votes[b.id] || 0) - (votes[a.id] || 0))
+                .map(item => (
+                  <ItemCard key={item.id} item={item} cat={cat} voted={!!myVotes[item.id]} voteCount={votes[item.id] || 0} maxVotes={maxVotesCat} onVote={handleVote} />
+                ))}
+            </div>
+
+            {/* Navigation dots */}
+            <div style={{ display: "flex", justifyContent: "center", gap: 6, marginTop: 24 }}>
+              {CATEGORIES.map((c, i) => (
+                <button key={c.id} onClick={() => setActiveTab(i)} style={{ width: 8, height: 8, borderRadius: "50%", border: "none", padding: 0, cursor: "pointer", background: activeTab === i ? c.color : "#DDD", transition: "all 0.2s" }} />
+              ))}
+            </div>
+
+            {/* Prev / Next */}
+            <div style={{ display: "flex", gap: 10, marginTop: 12 }}>
+              {activeTab > 0 && (
+                <button onClick={() => setActiveTab(activeTab - 1)} style={{ flex: 1, padding: "11px 0", borderRadius: 12, border: `1.5px solid ${CATEGORIES[activeTab - 1].color}`, background: "white", color: CATEGORIES[activeTab - 1].color, fontWeight: 700, fontSize: 13, cursor: "pointer" }}>
+                  ← {CATEGORIES[activeTab - 1].icon} {CATEGORIES[activeTab - 1].label}
+                </button>
+              )}
+              {activeTab < CATEGORIES.length - 1 && (
+                <button onClick={() => setActiveTab(activeTab + 1)} style={{ flex: 1, padding: "11px 0", borderRadius: 12, border: "none", background: CATEGORIES[activeTab + 1].color, color: "white", fontWeight: 700, fontSize: 13, cursor: "pointer" }}>
+                  {CATEGORIES[activeTab + 1].icon} {CATEGORIES[activeTab + 1].label} →
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* FOOTER */}
+          <div style={{ textAlign: "center", padding: "28px 20px 40px", background: "white", marginTop: 20, borderTop: "1px solid #F5F5F5" }}>
+            <div style={{ fontSize: 22, marginBottom: 6 }}>🌸 🏔️ 🌷 🌿 🌸</div>
+            <p style={{ margin: "0 0 4px", fontWeight: 900, fontSize: 15, background: "linear-gradient(135deg, #FF6FA8, #A855F7)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>See you in Big Bear! 🎉</p>
+            <p style={{ margin: "0 0 4px", fontSize: 12, color: "#AAA" }}>April 7–11 · Four Seasons Vista · 113 Winding Lane</p>
+            <p style={{ margin: 0, fontSize: 11, color: "#CCC" }}>Two families · 4 adults · 4 girls (8, 8, 11, 11 & 13) 🌸</p>
+            <div style={{ marginTop: 16, display: "flex", gap: 8, justifyContent: "center", flexWrap: "wrap" }}>
+              <span style={{ background: "#FFF0F8", color: "#FF6FA8", borderRadius: 20, padding: "3px 10px", fontSize: 10, fontWeight: 600 }}>🌸 Kawaii Spring Break Vibes</span>
+              <span style={{ background: "#F5F0FF", color: "#A855F7", borderRadius: 20, padding: "3px 10px", fontSize: 10, fontWeight: 600 }}>💖 Powered by Family Love</span>
+            </div>
+            <button
+              onClick={() => setPhase("thankyou")}
+              style={{ marginTop: 22, padding: "13px 36px", borderRadius: 50, border: "none", background: "linear-gradient(135deg, #FF6FA8, #A855F7)", color: "white", fontSize: 14, fontWeight: 800, cursor: "pointer", boxShadow: "0 6px 20px rgba(168,85,247,0.35)" }}
+            >
+              ✅ Done Voting!
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    // Mount
+    const root = ReactDOM.createRoot(document.getElementById("root"));
+    root.render(<App />);
+  </script>
+</body>
+</html>
